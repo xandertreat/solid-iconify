@@ -67,3 +67,5 @@ const fetchIconifyIcon = (
 
 	return task;
 };
+
+export default fetchIconifyIcon;

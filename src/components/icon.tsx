@@ -1,11 +1,5 @@
 import { createAsync } from "@solidjs/router"; // TODO: remove dep. for solid 2.0
-import {
-	ErrorBoundary,
-	Show,
-	Suspense,
-	mergeProps,
-	splitProps,
-} from "solid-js";
+import { ErrorBoundary, Suspense, mergeProps, splitProps } from "solid-js";
 import type { Component, JSX } from "solid-js";
 import { ICONIFY_CONFIGURATION } from "~/data/config";
 import LoadingFallback from "./loading";
@@ -39,10 +33,6 @@ export const Icon: Component<IconifyIconProps> = (raw) => {
 		apiParams.size = undefined;
 	}
 
-	const api = FALLBACKS
-		? ICONIFY_CONFIGURATION.ICONIFY_API[0]
-		: (ICONIFY_CONFIGURATION.ICONIFY_API as string);
-
 	const data = createAsync(() => fetchIconifyIcon(apiParams, api), {
 		name: `[solid-iconify-resource] ${props.icon}`,
 		initialValue: undefined,
@@ -50,26 +40,19 @@ export const Icon: Component<IconifyIconProps> = (raw) => {
 	});
 
 	return (
-		<Suspense
-			fallback={
-				<LoadingFallback loadingIcon={visibility.showLoading} {...rest} />
-			}
+		<ErrorBoundary
+			fallback={<ErrorFallback errorIcon={visibility.showError} {...rest} />}
 		>
-			<ErrorBoundary
-				fallback={<ErrorFallback errorIcon={visibility.showError} {...rest} />}
+			<Suspense
+				fallback={
+					<LoadingFallback loadingIcon={visibility.showLoading} {...rest} />
+				}
 			>
-				<Show
-					fallback={
-						<LoadingFallback loadingIcon={visibility.showLoading} {...rest} />
-					}
-					when={data()}
-				>
-					{(data) => (
-						<svg {...data().attributes} {...rest} innerHTML={data().vector} />
-					)}
-				</Show>
-			</ErrorBoundary>
-		</Suspense>
+				{(data) => (
+					<svg {...data().attributes} {...rest} innerHTML={data().vector} />
+				)}
+			</Suspense>
+		</ErrorBoundary>
 	);
 };
 
