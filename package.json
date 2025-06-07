@@ -68,9 +68,17 @@
 	},
 	"trustedDependencies": ["@biomejs/biome"],
 	"scripts": {
-		"build": "tsc -p tsconfig.json",
-		"dev": "tsx watch src/index.tsx",
+		"build": "bun tsdown",
 		"test": "vitest test",
-		"test:browser": "vitest"
+		"ci": "bun biome ci; bun tsc --noEmit; bun test; bun run build;",
+		"test:watch": "vitest --watch",
+		"test:coverage": "vitest run --coverage",
+		"test:browser": "vitest",
+		"check": "biome check; bun tsc",
+		"check:fix": "biome check --write; bun tsc",
+		"format": "biome format --write",
+		"format:check": "biome format",
+		"lint": "bun check",
+		"lint:fix": "bun check:fix"
 	}
 }

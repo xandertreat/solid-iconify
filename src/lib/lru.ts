@@ -1,3 +1,5 @@
+import { ICONIFY_CONFIGURATION } from "~/data/config";
+
 /**
  * A Least Recently Used (LRU) Cache implementation
  * @template K The type of the keys stored in the cache
@@ -13,10 +15,9 @@ export default class LRUCache<K, V> implements Iterable<[K, V]> {
 	 * @param entries Optional initial entries to populate the cache with
 	 * @throws {TypeError} If capacity is not a positive integer
 	 */
-	constructor(capacity = 128, entries?: Iterable<[K, V]>) {
-		if (!Number.isInteger(capacity) || capacity <= 0) {
+	constructor(capacity = ICONIFY_CONFIGURATION.COLLECTION_LIMIT, entries?: Iterable<[K, V]>) {
+		if (!Number.isInteger(capacity) || capacity <= 0)
 			throw new TypeError("capacity must be a positive integer");
-		}
 		this.capacity = capacity;
 		this.cache = new Map(entries);
 	}

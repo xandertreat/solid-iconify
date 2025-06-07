@@ -1,0 +1,8 @@
+{
+	"formatter": {
+		"formatWithErrors": true
+	},
+	"files": {
+		"ignore": ["dist"]
+	}
+}

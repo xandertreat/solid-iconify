@@ -1,7 +1,9 @@
 import type { JSX } from "solid-js";
 import type { IFilterXSSOptions } from "xss";
+import type LRUCache from "./lib/lru";
 
 /* ───────── helpers ───────── */
+type NonEmptyString = `${string}${string}`;
 
 type Alphabetical =
 	| "a"
@@ -35,7 +37,7 @@ type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 type ValidCharacter = Alphabetical | Digit | "-";
 
-type ValidSegment<S extends string> = S extends `${infer F}${infer R}`
+type ValidSegment<S extends NonEmptyString> = S extends `${infer F}${infer R}`
 	? F extends ValidCharacter
 		? R extends ""
 			? S
@@ -44,6 +46,12 @@ type ValidSegment<S extends string> = S extends `${infer F}${infer R}`
 	: never;
 
 type NonEmptyArray<T> = readonly [T, ...T[]];
+
+type NonNegativeInteger<T extends number> = number extends T
+	? never
+	: `${T}` extends `-${string}` | `${string}.${string}`
+		? never
+		: T;
 
 type SanitizeToggle =
 	| {
@@ -86,21 +94,21 @@ declare global {
 			IconifyApiParams,
 			IconifyVisibility {}
 
-	interface IconData {
-		attributes: Partial<JSX.SvgSVGAttributes<SVGSVGElement>>;
-		vector: string;
-	}
+	/* ───────── data structures ───────── */
+	type IconifyCollectionCache = LRUCache<ValidSegment<ValidCharacter>, IconifyIconCache>
+	type IconifyIconCache = LRUCache<ValidSegment<ValidCharacter>, Promise<NonEmptyString>>
 
 	/* ───────── configuration ───────── */
 
 	type IconifyConfig = Readonly<{
+		ICONIFY_API?: string | URL | NonEmptyArray<string | URL>;
+		REQUEST_OPTIONS?: RequestInit;
+		COLLECTION_LIMIT?: NonNegativeInteger | "grow" | "unlimited" | "no-cache";
+		ICON_LIMIT?: NonNegativeInteger | "grow" | "unlimited" | "no-cache";
 		DEFAULT_SVG_ATTRIBUTES?: Partial<JSX.SvgSVGAttributes<SVGSVGElement>>;
-		SVG_TITLE?: boolean;
+		SVG_TITLE?: string | boolean | null | undefined;
 		SHOW_LOADING_DEFAULT?: boolean;
 		SHOW_ERROR_DEFAULT?: boolean;
-		REQUEST_OPTIONS?: RequestInit;
-		CACHE_SIZE?: number | "unlimited" | "no-cache";
-		ICONIFY_API: string | NonEmptyArray<string>;
 	}> &
 		SanitizeToggle;
 
