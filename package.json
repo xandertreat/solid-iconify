@@ -67,12 +67,10 @@
 	"dependencies": {
 		"xss": "^1.0.15"
 	},
-	"trustedDependencies": [
-		"@biomejs/biome"
-	],
+	"trustedDependencies": ["@biomejs/biome"],
 	"scripts": {
+		"dev": "tsup --watch",
 		"build": "tsup",
-		"build:watch": "tsup --watch",
 		"test": "vitest test",
 		"test:watch": "vitest --watch",
 		"test:coverage": "vitest run --coverage",

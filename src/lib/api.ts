@@ -33,7 +33,6 @@ function getUri({
 
 	const base = `https://${host}/`;
 	const url = new URL(`${collection}.json?icons=${icons.toString()}`, base);
-	console.log(url.toString());
 	url.searchParams.sort();
 	return url;
 }
@@ -57,8 +56,10 @@ const fetchIconifyIcon = (
 					`[solid-iconify] ERROR - Iconify API bad response ${res.status}\n${res}`,
 				);
 			const json = (await res.json()) as IconifyJSON;
-			console.log(collection, icon, json);
-			let body = json.icons[icon].body;
+			let body = Object.values(json.icons).at(0)?.body;
+			console.log(collection, icon, json, body);
+			if (body === undefined)
+				throw Error("[solid-iconify] ERROR - Invalid SVG response");
 			if (ICONIFY_CONFIGURATION.SANITIZE) body = await sanitizeHtml(body);
 			if (!body || body.length === 0)
 				console.error("[solid-iconify] ERROR - empty svg");

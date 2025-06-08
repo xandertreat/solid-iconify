@@ -1,6 +1,7 @@
 import { createAsync } from "@solidjs/router"; // TODO: remove dep. for solid 2.0
 import {
 	ErrorBoundary,
+	Show,
 	Suspense,
 	createMemo,
 	mergeProps,
@@ -36,7 +37,14 @@ export default function Icon(props: IconifyIconProps) {
 			<Suspense
 				fallback={<LoadingFallback loadingIcon={local.showLoading} {...rest} />}
 			>
-				<SVGWrapper {...rest} innerHTML={data()} />
+				<Show
+					fallback={
+						<LoadingFallback loadingIcon={local.showLoading} {...rest} />
+					}
+					when={data()}
+				>
+					{(data) => <SVGWrapper {...rest} innerHTML={data()} />}
+				</Show>
 			</Suspense>
 		</ErrorBoundary>
 	);
