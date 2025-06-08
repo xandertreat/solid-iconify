@@ -3,13 +3,13 @@
 	"REQUEST_OPTIONS": {
 		"cache": "force-cache"
 	},
-	"COLLECTION_LIMIT": 32,
-	"ICON_LIMIT": 64,
+	"CACHE_SIZE": { "strategy": "unlimited" },
+	"COLLECTION_SIZE": { "strategy": "grow", "initial": 16 },
 	"DEFAULT_SVG_ATTRIBUTES": {
 		"xmlns": "http://www.w3.org/2000/svg",
 		"width": "1em",
 		"height": "1em",
-		"viewBox": "0 0 16 16",
+		"viewBox": "0 0 24 24",
 		"fill": "currentColor",
 		"role": "img",
 		"style": {
@@ -20,7 +20,7 @@
 	},
 	"SVG_TITLE": false,
 	"SHOW_LOADING_DEFAULT": false,
-	"SHOW_ERROR_DEFAULT": true,
-	"SANITIZE": true,
+	"SHOW_ERROR_DEFAULT": false,
+	"SANITIZE": false,
 	"SANITIZE_OPTIONS": {}
 }

@@ -1,7 +1,8 @@
 {
+	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"target": "esnext",
-		"module": "preserve",
+		"target": "ESNext",
+		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"jsx": "preserve",
@@ -19,10 +20,10 @@
 		"skipLibCheck": true,
 		"isolatedModules": true,
 		"forceConsistentCasingInFileNames": true,
-		"verbatimModuleSyntax": true,
-		"types": ["vite/client", "node", "@iconify/types"],
+		"types": ["node"],
 		"paths": {
 			"~/*": ["./src/*"]
 		}
-	}
+	},
+	"include": ["src/**/*", "src/types/global.d.ts"]
 }

@@ -20,13 +20,14 @@
 		"mjs"
 	],
 	"type": "module",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./dist/index/index.js",
+	"module": "./dist/index/index.js",
+	"types": "./dist/index/index.d.ts",
 	"exports": {
-		".": {
-			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+		"solid": "./dist/index/index.jsx",
+		"import": {
+			"types": "./dist/index/index.d.ts",
+			"default": "./dist/index/index.js"
 		}
 	},
 	"sideEffects": false,
@@ -39,10 +40,11 @@
 		"url": "git+https://github.com/xandertreat/solid-iconify.git"
 	},
 	"engines": {
-		"node": ">=18.0.0"
+		"node": ">=20.0.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"@changesets/cli": "^2.29.4",
 		"@iconify/types": "^2.0.0",
 		"@solidjs/router": ">=0.15.0",
 		"@solidjs/testing-library": "^0.8.10",
@@ -50,35 +52,43 @@
 		"@vitest/browser": "^3.2.2",
 		"@vitest/coverage-v8": "3.1.4",
 		"playwright": "^1.52.0",
-		"solid-js": ">=1.8.0",
-		"tsdown": "^0.12.7",
+		"solid-js": ">=1.9.0",
 		"tslib": "^2.8.1",
+		"tsup": "^8.5.0",
+		"tsup-preset-solid": "^2.2.0",
 		"typescript": "^5.8.3",
 		"unplugin-unused": "^0.5.0",
-		"vite-plugin-solid": "^2.11.6",
 		"vitest": "^3.2.2"
 	},
 	"peerDependencies": {
-		"solid-js": ">=1.8.0",
+		"solid-js": ">=1.9.0",
 		"@solidjs/router": ">=0.15.0"
 	},
 	"dependencies": {
-		"@thednp/domparser": "^0.1.2",
 		"xss": "^1.0.15"
 	},
-	"trustedDependencies": ["@biomejs/biome"],
+	"trustedDependencies": [
+		"@biomejs/biome"
+	],
 	"scripts": {
-		"build": "bun tsdown",
+		"build": "tsup",
+		"build:watch": "tsup --watch",
 		"test": "vitest test",
-		"ci": "bun biome ci; bun tsc --noEmit; bun test; bun run build;",
 		"test:watch": "vitest --watch",
 		"test:coverage": "vitest run --coverage",
 		"test:browser": "vitest",
-		"check": "biome check; bun tsc",
-		"check:fix": "biome check --write; bun tsc",
+		"check": "biome check; bun typecheck",
+		"check:fix": "biome check --write; bun typecheck",
 		"format": "biome format --write",
 		"format:check": "biome format",
+		"typecheck": "tsc --noEmit",
 		"lint": "bun check",
-		"lint:fix": "bun check:fix"
-	}
+		"lint:fix": "bun check:fix",
+		"pkg:changeset": "changeset",
+		"pkg:version": "changeset version",
+		"pkg:publish": "bun run build && changeset publish",
+		"ci": "bun biome ci; bun typecheck; bun run build; bun test;"
+	},
+	"browser": {},
+	"typesVersions": {}
 }

@@ -1,61 +1,43 @@
 import { createAsync } from "@solidjs/router"; // TODO: remove dep. for solid 2.0
-import { ErrorBoundary, Suspense, mergeProps, splitProps } from "solid-js";
-import type { Component, JSX } from "solid-js";
-import { ICONIFY_CONFIGURATION } from "~/data/config";
-import LoadingFallback from "./loading";
-import ErrorFallback from "./error";
+import {
+	ErrorBoundary,
+	Suspense,
+	createMemo,
+	mergeProps,
+	splitProps,
+} from "solid-js";
+import ErrorFallback from "~/components/fallbacks/error";
+import LoadingFallback from "~/components/fallbacks/loading";
+import SVGWrapper from "~/components/ui/svg";
+import fetchIconifyIcon from "~/lib/api";
+import type { IconifyIconProps } from "~/types/global";
+import { toSpecifier } from "~/types/guards";
 
-export const Icon: Component<IconifyIconProps> = (raw) => {
-	const props = mergeProps(
-		{
-			showLoading: ICONIFY_CONFIGURATION.SHOW_LOADING_DEFAULT,
-			showError: ICONIFY_CONFIGURATION.SHOW_ERROR_DEFAULT,
-		},
-		raw,
+export default function Icon(props: IconifyIconProps) {
+	const [local, rest] = splitProps(
+		mergeProps(
+			{
+				showLoading: false,
+				showError: false,
+			},
+			props,
+		),
+		["icon", "showLoading", "showError", "flip", "rotate", "box"],
 	);
-	const [visibility, _] = splitProps(props, ["showLoading", "showError"]);
-	const [apiParams, rest]: [
-		IconifyApiParams,
-		JSX.SvgSVGAttributes<SVGSVGElement>,
-	] = splitProps(_, [
-		"icon",
-		"color",
-		"size",
-		"flip",
-		"rotate",
-		"download",
-		"box",
-	]);
 
-	if (typeof apiParams.size === "number") {
-		rest.width = `${apiParams.size}em`;
-		rest.height = `${apiParams.size}em`;
-		apiParams.size = undefined;
-	}
+	const specifier = createMemo(() => toSpecifier(local.icon));
 
-	const data = createAsync(() => fetchIconifyIcon(apiParams, api), {
-		name: `[solid-iconify-resource] ${props.icon}`,
-		initialValue: undefined,
-		deferStream: false,
-	});
+	const data = createAsync(() => fetchIconifyIcon(specifier()));
 
 	return (
 		<ErrorBoundary
-			fallback={<ErrorFallback errorIcon={visibility.showError} {...rest} />}
+			fallback={<ErrorFallback errorIcon={local.showError} {...rest} />}
 		>
 			<Suspense
-				fallback={
-					<LoadingFallback loadingIcon={visibility.showLoading} {...rest} />
-				}
+				fallback={<LoadingFallback loadingIcon={local.showLoading} {...rest} />}
 			>
-				{(data) => (
-					<svg {...data().attributes} {...rest} innerHTML={data().vector} />
-				)}
+				<SVGWrapper {...rest} innerHTML={data()} />
 			</Suspense>
 		</ErrorBoundary>
 	);
-};
-
-// TODO: shrink size down further, use json API + allow params but do it in JS (not a req)
-// TODO: better host list handling (i.e. multiple attempts for 1, managing their status, delays between errors etc, as well as parsing)
-// TODO: configuration consistent / stable (i.e. configuration always runs before any rendering / reading of config)
+}

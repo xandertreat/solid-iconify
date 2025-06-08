@@ -1,18 +1,17 @@
-import { Match, mergeProps, splitProps, Switch } from "solid-js";
-import type { Component, JSX } from "solid-js";
+import { Match, Switch, mergeProps, splitProps } from "solid-js";
+import type { JSX } from "solid-js";
 
 import { ICONIFY_CONFIGURATION } from "~/data/config.js";
 
-const SVGWrapper: Component<JSX.SvgSVGAttributes<SVGSVGElement>> = (props) => {
-	const [local, rest] = splitProps(props, ["children"]);
-	const attributes = mergeProps(
-		ICONIFY_CONFIGURATION.DEFAULT_SVG_ATTRIBUTES,
-		rest,
+export default function SVGWrapper(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+	const [local, rest] = splitProps(
+		mergeProps(ICONIFY_CONFIGURATION.DEFAULT_SVG_ATTRIBUTES, props),
+		["children"],
 	);
 
 	return (
 		// biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
-		<svg {...attributes}>
+		<svg {...rest}>
 			<Switch>
 				<Match when={typeof ICONIFY_CONFIGURATION.SVG_TITLE === "string"}>
 					<title>{ICONIFY_CONFIGURATION.SVG_TITLE}</title>
@@ -24,6 +23,4 @@ const SVGWrapper: Component<JSX.SvgSVGAttributes<SVGSVGElement>> = (props) => {
 			{local.children}
 		</svg>
 	);
-};
-
-export default SVGWrapper;
+}

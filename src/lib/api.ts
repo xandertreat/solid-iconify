@@ -1,71 +1,86 @@
-const buildURL = (
-	{ icon: specifier, ...rest }: IconifyApiParams,
-	api: string,
-): [string, URL] => {
-	const [collection, name] = specifier.split(":");
-	if (!collection || !name) throw Error("Iconify: bad specifier");
+import type { IconifyJSON } from "@iconify/types";
+import { delCacheIcon, getCacheIcon, setCacheIcon } from "~/data/cache";
+import { ICONIFY_CONFIGURATION } from "~/data/config";
+import type { IconifyData, IconifySpecifier } from "~/types/global";
+import { sanitizeHtml } from "./sanitization";
 
-	const url = new URL(`${collection}/${name}.svg`, `https://${api}/`);
-	for (const [k, v] of Object.entries(rest))
-		v != null && url.searchParams.set(k, String(v));
+// helpers //
+function coerceToHost(uriLike: string | URL): string {
+	let str: string;
+	if (typeof uriLike === "string")
+		str = uriLike.substring(uriLike.indexOf("//") + 1).replace(/\//g, "");
+	else str = uriLike.hostname;
+	return str.normalize().trim();
+}
+
+function getUri({
+	collection,
+	icons,
+	api,
+}: {
+	collection: string;
+	icons: string[];
+	api: number;
+}): URL {
+	if (!collection || !icons || icons.length <= 0)
+		throw Error(`[solid-iconify] Bad specifier: ${collection}, ${icons}`);
+
+	const src = ICONIFY_CONFIGURATION.ICONIFY_API;
+	let host: string;
+	if (Array.isArray(src)) {
+		host = coerceToHost(src[api % src.length]);
+	} else host = coerceToHost(src as string | URL);
+
+	const base = `https://${host}/`;
+	const url = new URL(`${collection}.json?icons=${icons.toString()}`, base);
+	console.log(url.toString());
 	url.searchParams.sort();
-	return [specifier, url];
-};
+	return url;
+}
 
+// main //
 const fetchIconifyIcon = (
-	params: IconifyApiParams,
-	apiUri: string,
+	specifier: IconifySpecifier,
 	attempt = 0,
-): Promise<IconData> => {
-	const [spec, url] = buildURL(params, apiUri);
-	const cacheKey = `${spec} [${url.searchParams.toString() ?? "-"}]`;
-	const hit = cache?.get(cacheKey);
+): IconifyData => {
+	// check cache
+	const [collection, icon] = specifier.split(":");
+	const hit = getCacheIcon(collection, icon);
 	if (hit) return hit;
 
-	const task = fetch(url, CONFIGURATION.REQUEST_OPTIONS)
+	// make api call
+	const uri = getUri({ collection, icons: [icon], api: attempt });
+	const response = fetch(uri, ICONIFY_CONFIGURATION.REQUEST_OPTIONS)
 		.then(async (res) => {
-			if (!res.ok) throw Error(`Iconify ${res.status}`);
-
-			let raw = await res.text();
-			if (!raw || raw.length === 0) throw Error("Iconify: empty SVG");
-			if (CONFIGURATION.SANITIZE) {
-				if (!sanitizeHtml) await ensureSanitize();
-				raw = escapeHTML(sanitizeHtml(raw));
-				console.log("here");
-				if (!raw || raw.length === 0) throw Error("Iconify: empty SVG");
-			}
-
-			if (!domParser) await ensureDOM();
-			const svgEl = domParser.parseFromString(
-				raw,
-				"image/svg+xml",
-			).documentElement;
-			if (svgEl.nodeName !== "svg") throw Error("Iconify: invalid SVG");
-
-			return {
-				attributes: {
-					...CONFIGURATION.DEFAULT_SVG_ATTRIBUTES,
-					...normalizeAttributes(svgEl.attributes),
-				},
-				vector: getInnerHtml(raw),
-			} as IconData;
-		})
-		.finally(() => cache?.set(cacheKey, task))
-		.catch((e) => {
-			if (FALLBACKS && attempt + 1 < CONFIGURATION.ICONIFY_API.length) {
-				const nextApi =
-					CONFIGURATION.ICONIFY_API[
-						(attempt + 1) % CONFIGURATION.ICONIFY_API.length
-					];
-				return new Promise((r) => setTimeout(r, 500)).then(() =>
-					fetchIconifyIcon(params, nextApi, attempt + 1),
+			if (!res.ok)
+				console.error(
+					`[solid-iconify] ERROR - Iconify API bad response ${res.status}\n${res}`,
 				);
-			}
-			cache?.delete(cacheKey);
+			const json = (await res.json()) as IconifyJSON;
+			console.log(collection, icon, json);
+			let body = json.icons[icon].body;
+			if (ICONIFY_CONFIGURATION.SANITIZE) body = await sanitizeHtml(body);
+			if (!body || body.length === 0)
+				console.error("[solid-iconify] ERROR - empty svg");
+			return body;
+		})
+		.finally(() => setCacheIcon(collection, icon, response))
+		.catch((e) => {
+			console.error(
+				`[solid-iconify] ERROR - fetching from Iconify API (${uri})\n${e}`,
+			);
+			const apiList = ICONIFY_CONFIGURATION.ICONIFY_API;
+			const fallbacksAvailable = Array.isArray(apiList);
+			if (fallbacksAvailable && attempt + 1 < apiList.length)
+				return new Promise((r) => setTimeout(r, 500)).then(() =>
+					fetchIconifyIcon(specifier, attempt + 1),
+				);
+			delCacheIcon(collection, icon);
 			return Promise.reject(e);
 		});
 
-	return task;
+	setCacheIcon(collection, icon, response);
+	return response;
 };
 
 export default fetchIconifyIcon;
