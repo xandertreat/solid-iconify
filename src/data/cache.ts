@@ -1,4 +1,3 @@
-import { createEffect } from "solid-js";
 import LRUCache, { type LRUOptions } from "~/lib/lru.js";
 import type {
 	IconifyCollectionCache,
@@ -10,36 +9,32 @@ import { ICONIFY_CONFIGURATION } from "./config";
 let iconifyCache: IconifyCollectionCache | undefined;
 
 function createCollectionCache(prev?: IconifyIconCache): IconifyIconCache {
-	const cfg = ICONIFY_CONFIGURATION.COLLECTION_SIZE;
-	let cacheCfg: LRUOptions;
+	const cfg = ICONIFY_CONFIGURATION.CACHE;
+	let lruOptions: LRUOptions;
 
-	if (typeof cfg === "number") cacheCfg = { strategy: "grow", initial: cfg };
-	else cacheCfg = cfg;
+	if (typeof cfg === "number") lruOptions = { strategy: "grow", initial: cfg };
+	else if (cfg.strategy === "no-cache")
+		throw new Error(
+			"[solid-iconify] ERROR - Attempting to cache with 'no-cache' strategy",
+		);
+	else lruOptions = cfg;
 
-	return new LRUCache(cacheCfg, prev);
+	return new LRUCache(lruOptions, prev);
 }
 
-function handleCacheSync() {
-	const cfg = ICONIFY_CONFIGURATION.CACHE_SIZE;
-	let cacheCfg: LRUOptions;
-
-	if (typeof cfg === "number") cacheCfg = { strategy: "grow", initial: cfg };
-	else if (cfg.strategy === "no-cache") return;
-	else cacheCfg = cfg;
+export function configureCache() {
+	const cfg = ICONIFY_CONFIGURATION.CACHE;
+	if (typeof cfg === "object" && cfg.strategy === "no-cache") return;
 
 	if (iconifyCache)
-		iconifyCache = new LRUCache(
-			cacheCfg,
+		iconifyCache = new Map(
 			[...iconifyCache].map(([collection, iconCache]) => [
 				collection,
 				createCollectionCache(iconCache),
 			]),
 		);
-	else iconifyCache = new LRUCache(cacheCfg);
+	else iconifyCache = new Map();
 }
-
-// sync cache to configuration
-createEffect(handleCacheSync);
 
 export const getCacheIcon = (collection: string, icon: string) =>
 	iconifyCache?.get(collection)?.get(icon);

@@ -12,7 +12,7 @@ export type SanitizeToggle =
 	  }
 	| {
 			readonly SANITIZE?: false;
-			readonly SANITIZE_OPTIONS?: undefined;
+			readonly SANITIZE_OPTIONS?: never;
 	  };
 
 /* ───────── types ───────── */
@@ -44,23 +44,20 @@ export interface IconifyData {
 	vBox: number[];
 	body: string;
 }
-export type IconifyCollectionCache = LRUCache<string, IconifyIconCache>;
+export type IconifyCollectionCache = Map<string, IconifyIconCache>;
 export type IconifyIconCache = LRUCache<string, Promise<IconifyData>>;
 
-export type IconifyIconCacheSize =
+export type IconifyCacheConfiguration =
+	| { strategy: "no-cache" }
 	| { strategy: "unlimited" }
 	| { strategy: "grow"; initial: number }
 	| { strategy: "static"; limit: number }
 	| number; // infer to be static
-export type IconifyCollectionCacheSize =
-	| IconifyIconCacheSize
-	| { strategy: "no-cache" };
 
 /* ───────── configuration ───────── */
 export type IconifyConfig = Readonly<{
 	ICONIFY_API: string | URL | NonEmptyArray<string | URL>;
 	REQUEST_OPTIONS: RequestInit;
-	CACHE_SIZE: IconifyCollectionCacheSize;
-	COLLECTION_SIZE: IconifyIconCacheSize;
+	CACHE: IconifyCacheConfiguration;
 }> &
 	SanitizeToggle;

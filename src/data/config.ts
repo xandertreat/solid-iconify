@@ -1,18 +1,10 @@
-import { createStore } from "solid-js/store";
 import type { IconifyConfig } from "~/types";
 import defaults from "../json/defaults.json" with { type: "json" };
+import { configureCache } from "./cache";
 
-const DEFAULT_ICONIFY_CONFIGURATION = defaults as IconifyConfig;
+export let ICONIFY_CONFIGURATION: IconifyConfig = defaults as IconifyConfig;
 
-const [ICONIFY_CONFIGURATION, setConfig] = createStore<IconifyConfig>(
-	JSON.parse(JSON.stringify(DEFAULT_ICONIFY_CONFIGURATION)),
-);
-
-const configureIconify = (patch: Partial<IconifyConfig>): void =>
-	setConfig({ ...ICONIFY_CONFIGURATION, ...patch } as Partial<IconifyConfig>);
-
-export {
-	DEFAULT_ICONIFY_CONFIGURATION,
-	ICONIFY_CONFIGURATION,
-	configureIconify,
-};
+export function configureIconify (patch: Partial<IconifyConfig>) {
+	ICONIFY_CONFIGURATION = { ...ICONIFY_CONFIGURATION, ...patch } as IconifyConfig;
+	configureCache();
+}

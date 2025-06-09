@@ -11,7 +11,6 @@
 		"referrerPolicy": "no-referrer",
 		"keepalive": true
 	},
-	"CACHE_SIZE": { "strategy": "unlimited" },
-	"COLLECTION_SIZE": { "strategy": "grow", "initial": 16 },
+	"CACHE": { "strategy": "unlimited" },
 	"SANITIZE": false
 }

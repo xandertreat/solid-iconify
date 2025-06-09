@@ -7,12 +7,12 @@ const generateSolidPresetOptions = (
 ): preset.PresetOptions => ({
 	entries: [
 		{
-			dev_entry: true,
-			server_entry: true,
+			dev_entry: false,
+			server_entry: false,
 			entry: "src/index.tsx",
 		},
 	],
-	cjs: true,
+	cjs: false,
 	drop_console: !watching, // no console prints for prod
 });
 
@@ -34,17 +34,15 @@ export default defineConfig((config) => {
 		clean: !watch,
 		treeshake: true,
 		splitting: true,
-		platform: "neutral",
+
 		skipNodeModulesBundle: true,
+		shims: true,
 
 		minify: !watch,
 		minifyIdentifiers: !watch,
 		minifySyntax: !watch,
 		minifyWhitespace: !watch,
 		bundle: true,
-
-		shims: true,
-		cjsInterop: true,
 	}));
 
 	return generated;

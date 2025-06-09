@@ -1,7 +1,7 @@
 {
 	"author": "Xander Treat",
 	"name": "@xtreat/solid-iconify",
-	"version": "0.0.2",
+	"version": "0.1.0",
 	"description": "A reactive and first class native Solid Iconify icon component",
 	"license": "MIT",
 	"keywords": [
@@ -63,88 +63,14 @@
 		"library"
 	],
 	"type": "module",
-	"main": "./dist/server.cjs",
-	"module": "./dist/server.js",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
-		"worker": {
-			"solid": "./dist/server.jsx",
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/server.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/server.cjs"
-			}
-		},
-		"browser": {
-			"solid": {
-				"development": "./dist/dev.jsx",
-				"import": "./dist/index.jsx"
-			},
-			"development": {
-				"import": {
-					"types": "./dist/index.d.ts",
-					"default": "./dist/dev.js"
-				},
-				"require": {
-					"types": "./dist/index.d.cts",
-					"default": "./dist/dev.cjs"
-				}
-			},
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/index.cjs"
-			}
-		},
-		"deno": {
-			"solid": "./dist/server.jsx",
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/server.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/server.cjs"
-			}
-		},
-		"node": {
-			"solid": "./dist/server.jsx",
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/server.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/server.cjs"
-			}
-		},
-		"solid": {
-			"development": "./dist/dev.jsx",
-			"import": "./dist/index.jsx"
-		},
-		"development": {
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/dev.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/dev.cjs"
-			}
-		},
+		"solid": "./dist/index.jsx",
 		"import": {
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
-		},
-		"require": {
-			"types": "./dist/index.d.cts",
-			"default": "./dist/index.cjs"
 		}
 	},
 	"sideEffects": false,
@@ -181,7 +107,9 @@
 	"dependencies": {
 		"xss": "^1.0.15"
 	},
-	"trustedDependencies": ["@biomejs/biome"],
+	"trustedDependencies": [
+		"@biomejs/biome"
+	],
 	"scripts": {
 		"dev": "tsup --watch",
 		"build": "tsup",
@@ -201,9 +129,6 @@
 		"pkg:publish": "bun run build && changeset publish",
 		"ci": "bun biome ci; bun typecheck; bun run build; bun test;"
 	},
-	"browser": {
-		"./dist/server.js": "./dist/index.js",
-		"./dist/server.cjs": "./dist/index.cjs"
-	},
+	"browser": {},
 	"typesVersions": {}
 }

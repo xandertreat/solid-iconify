@@ -10,10 +10,10 @@ export default function Icon(props: IconifyIconProps) {
 	);
 	return (
 		<svg
-			height={data.latest?.vBox[3] ?? 24}
-			innerHTML={data.latest?.body}
-			viewBox={data.latest?.vBox.join(" ") ?? "0 0 24 24"}
-			width={data.latest?.vBox[2] ?? 24}
+			height={data()?.vBox[3] ?? 24}
+			innerHTML={data()?.body}
+			viewBox={data()?.vBox.join(" ") ?? "0 0 24 24"}
+			width={data()?.vBox[2] ?? 24}
 			xmlns="http://www.w3.org/2000/svg"
 			{...rest}
 		/>
