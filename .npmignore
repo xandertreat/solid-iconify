@@ -1,8 +1,8 @@
 .changeset
-node_modules
 tests
-.gitignore
 bun.lock
 biome.jsonc
 tsup.config.ts
 vitest.config.ts
+src
+tsconfig.json
