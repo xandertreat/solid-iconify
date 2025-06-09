@@ -32,10 +32,7 @@ export interface IconifyVisibility {
 	showError?: boolean;
 }
 
-export interface IconifyIconProps
-	extends JSX.SvgSVGAttributes<SVGSVGElement>,
-		IconifyVisibility,
-		IconifyMockParams {
+export interface IconifyIconProps extends JSX.SvgSVGAttributes<SVGSVGElement> {
 	icon: IconifySpecifier;
 }
 

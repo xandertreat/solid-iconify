@@ -34,6 +34,8 @@ export default defineConfig((config) => {
 		clean: !watch,
 		treeshake: true,
 		splitting: true,
+		cjsInterop: true,
+		platform: "browser",
 
 		skipNodeModulesBundle: true,
 		shims: true,
