@@ -7,17 +7,17 @@ const generateSolidPresetOptions = (
 ): preset.PresetOptions => ({
 	entries: [
 		{
-			// entries with '.tsx' extension will have `solid` export condition generated
+			dev_entry: false,
+			server_entry: false,
 			entry: "src/index.tsx",
 		},
 	],
-	drop_console: !watching, // remove all `console.*` calls and `debugger` statements in prod builds
 	cjs: false,
-	out_dir: "dist/index",
+	drop_console: !watching, // no console prints for prod.
 });
 
 export default defineConfig((config) => {
-	const watching = !!config.watch;
+	const watching = Boolean(config.watch);
 	const solidPresetOptions = generateSolidPresetOptions(watching);
 	const parsedOptions = preset.parsePresetOptions(solidPresetOptions, watching);
 
@@ -40,7 +40,6 @@ export default defineConfig((config) => {
 			treeshake: true,
 			shims: true,
 			clean: true,
-			sourcemap: true,
 		}));
 
 	return generated;

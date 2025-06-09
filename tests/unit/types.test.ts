@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
-import { iconifySpecifierPattern, toSpecifier } from "~/types";
+import type { IconifyFlip, IconifyRotate } from "../../src/types";
+import { iconifySpecifierPattern } from "../guards";
 
 // Pattern Tests
 test("iconifySpecifierPattern validates correct icon names", () => {
@@ -40,31 +41,6 @@ test("iconifySpecifierPattern rejects invalid icon names", () => {
 
 	for (const icon of invalidIcons) {
 		expect(iconifySpecifierPattern.test(icon)).toBe(false);
-	}
-});
-
-// toSpecifier Tests
-test("toSpecifier normalizes icon names", () => {
-	const testCases = [
-		{
-			input: "  MDI:ACCOUNT  ",
-			expected: "mdi:account",
-			description: "trims spaces and converts to lowercase",
-		},
-		{
-			input: "Font-Awesome:user-circle",
-			expected: "font-awesome:user-circle",
-			description: "preserves hyphens but converts to lowercase",
-		},
-		{
-			input: "MaterialDesign:notification_active",
-			expected: "materialdesign:notification_active",
-			description: "handles complex names",
-		},
-	];
-
-	for (const { input, expected } of testCases) {
-		expect(toSpecifier(input)).toBe(expected);
 	}
 });
 

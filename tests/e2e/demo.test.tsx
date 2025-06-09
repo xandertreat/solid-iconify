@@ -1,6 +1,6 @@
 import { render } from "@solidjs/testing-library";
 import { expect, test } from "vitest";
-import Icon from "~/components/icon";
+import Icon from "../../src/index";
 
 // TODO: implement and create tests
 test("renders svg", async () => {

@@ -1,20 +1,19 @@
 import type { JSX } from "solid-js";
 import type { IFilterXSSOptions } from "xss";
-import type LRUCache from "../lib/lru";
+import type LRUCache from "./lib/lru";
 
 /* ───────── helpers ───────── */
-type Brand<T, B extends string> = T & { readonly __brand: B };
-
 type NonEmptyArray<T> = readonly [T, ...T[]];
-export type NonEmptyString = Brand<string, "isNonEmptyString">;
-export type PositiveInteger = Brand<number, "isPositiveInteger">;
 
 export type SanitizeToggle =
 	| {
 			readonly SANITIZE: true;
 			readonly SANITIZE_OPTIONS?: Partial<IFilterXSSOptions>;
 	  }
-	| { readonly SANITIZE?: false; readonly SANITIZE_OPTIONS?: never };
+	| {
+			readonly SANITIZE?: false;
+			readonly SANITIZE_OPTIONS?: undefined;
+	  };
 
 /* ───────── types ───────── */
 export type IconifySpecifier = string;
@@ -41,28 +40,27 @@ export interface IconifyIconProps
 }
 
 /* ───────── data structures ───────── */
-export type IconifyData = Promise<string>;
+export interface IconifyData {
+	vBox: number[];
+	body: string;
+}
 export type IconifyCollectionCache = LRUCache<string, IconifyIconCache>;
-export type IconifyIconCache = LRUCache<string, IconifyData>;
+export type IconifyIconCache = LRUCache<string, Promise<IconifyData>>;
 
 export type IconifyIconCacheSize =
 	| { strategy: "unlimited" }
-	| { strategy: "grow"; initial: PositiveInteger }
-	| { strategy: "static"; limit: PositiveInteger }
-	| PositiveInteger; // infer to be static
+	| { strategy: "grow"; initial: number }
+	| { strategy: "static"; limit: number }
+	| number; // infer to be static
 export type IconifyCollectionCacheSize =
 	| IconifyIconCacheSize
 	| { strategy: "no-cache" };
 
 /* ───────── configuration ───────── */
 export type IconifyConfig = Readonly<{
-	ICONIFY_API: NonEmptyString | URL | NonEmptyArray<NonEmptyString | URL>;
+	ICONIFY_API: string | URL | NonEmptyArray<string | URL>;
 	REQUEST_OPTIONS: RequestInit;
 	CACHE_SIZE: IconifyCollectionCacheSize;
 	COLLECTION_SIZE: IconifyIconCacheSize;
-	DEFAULT_SVG_ATTRIBUTES: Partial<JSX.SvgSVGAttributes<SVGSVGElement>>;
-	SVG_TITLE: NonEmptyString | boolean;
-	SHOW_LOADING_DEFAULT: boolean;
-	SHOW_ERROR_DEFAULT: boolean;
 }> &
 	SanitizeToggle;

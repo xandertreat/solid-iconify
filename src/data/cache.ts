@@ -4,7 +4,7 @@ import type {
 	IconifyCollectionCache,
 	IconifyData,
 	IconifyIconCache,
-} from "~/types/global";
+} from "~/types";
 import { ICONIFY_CONFIGURATION } from "./config";
 
 let iconifyCache: IconifyCollectionCache | undefined;
@@ -47,7 +47,7 @@ export const getCacheIcon = (collection: string, icon: string) =>
 export function setCacheIcon(
 	collection: string,
 	icon: string,
-	data: IconifyData,
+	data: Promise<IconifyData>,
 ) {
 	if (!iconifyCache?.get(collection))
 		iconifyCache?.set(collection, createCollectionCache());

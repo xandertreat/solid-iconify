@@ -10,7 +10,6 @@
         "@biomejs/biome": "1.9.4",
         "@changesets/cli": "^2.29.4",
         "@iconify/types": "^2.0.0",
-        "@solidjs/router": ">=0.15.0",
         "@solidjs/testing-library": "^0.8.10",
         "@types/node": "^22.15.30",
         "@vitest/browser": "^3.2.2",
@@ -25,7 +24,6 @@
         "vitest": "^3.2.2",
       },
       "peerDependencies": {
-        "@solidjs/router": ">=0.15.0",
         "solid-js": ">=1.9.0",
       },
     },

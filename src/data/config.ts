@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import type { IconifyConfig } from "~/types/global";
+import type { IconifyConfig } from "~/types";
 import defaults from "../json/defaults.json" with { type: "json" };
 
 const DEFAULT_ICONIFY_CONFIGURATION = defaults as IconifyConfig;
